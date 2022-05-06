@@ -110,7 +110,7 @@ public class ObjectAdapter {
 
 			if (!isUserPortal()) {
 				// TODO: Improve this part by using appropriate filterhelper
-				Response response = command.searchObject("ir.model", "search", new Object[] {});
+				Response response = command.searchObject("ir.model", new Object[] {});
 				if (response.isSuccessful()) {
 					ids = response.getResponseObjectAsArray();
 					Object[] result = command.readObject("ir.model", ids, new String[] { "model" });

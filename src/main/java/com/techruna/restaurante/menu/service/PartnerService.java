@@ -5,10 +5,12 @@ import com.odoojava.api.RowCollection;
 
 public interface PartnerService {
 	
-	public Row obtenerPartner(String id);
+	public Row obtenerPartner(String id) throws Exception;
 	
-	public RowCollection obtenerPartners();
+	public Row obtenerPartner(String id, String[] listaCampos) throws Exception;
 	
-	public void registrarPartner();
+	public RowCollection obtenerPartners() throws Exception ;
+	
+	public void registrarPartner() throws Exception ;
 	
 }

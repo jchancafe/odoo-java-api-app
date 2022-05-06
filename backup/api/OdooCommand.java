@@ -20,6 +20,8 @@ package com.odoojava.api;
 
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.xmlrpc.XmlRpcException;
 
 /**
@@ -30,6 +32,7 @@ import org.apache.xmlrpc.XmlRpcException;
  *
  */
 public class OdooCommand {
+	private static final Logger logger = LogManager.getLogger(OdooCommand.class);
 
     private final Session session;
 
@@ -89,11 +92,20 @@ public class OdooCommand {
         try {
             // TODO: test differents version with search on quantity on products
             // with location_id in the context to check that it works or not
-            /*Response response = (this.session.getServerVersion().getMajor() < 10)
+        	//Response response = null;
+        	logger.info("ServerVersion {}", this.session.getServerVersion().getMajor());
+        	/*if (this.session.getServerVersion().getMajor() < 10) {
+        		logger.info("menor que 10");
+        		response = new Response(session.executeCommand(objectName, "search", params));
+        	}else {
+        		logger.info("mayor a 10");
+        		response = new Response(session.executeCommandWithContext(objectName, "search", params));
+        	}*/
+            Response response = (this.session.getServerVersion().getMajor() < 10)
                     ? new Response(session.executeCommand(objectName, "search", params))
-                    : new Response(session.executeCommandWithContext(objectName, "search", params));*/
+                    : new Response(session.executeCommandWithContext(objectName, "search", params));
         	
-        	Response response = new Response(session.executeCommandKw(objectName, order, params, null));
+        	//Response response = new Response(session.executeCommandKw(objectName, order, params, null));
 
             return response;
         } catch (XmlRpcException e) {

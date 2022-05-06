@@ -387,6 +387,16 @@ public class Session {
 	 */
 	public Object executeCommand(final String objectName, final String commandName, final Object[] parameters)
 			throws XmlRpcException {
+		/**/
+		if(userID == 0) {
+			logger.info("no conectado");
+			try {
+				this.authenticate();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		Object[] connectionParams = new Object[] { databaseName, userID, password, objectName, commandName };
 		logger.info("executeCommand");
 		logger.info("databaseName: {}", databaseName);
@@ -424,26 +434,29 @@ public class Session {
 			Context context) throws XmlRpcException {
 		logger.info("executeCommandKw");
 		List<Object> paramsList = new ArrayList<>();
-		try {
-			this.authenticate();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(userID == 0) {
+			logger.info("no conectado");
+			try {
+				this.authenticate();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		paramsList.addAll(Arrays.asList(new Object[] { databaseName, userID, password, objectName, commandName, Arrays.asList(Arrays.asList(
 	    		)) }));
-		/*if (parameters != null && parameters.length > 0) {
+		if (parameters != null && parameters.length > 0) {
 			paramsList.add(Arrays.asList(parameters));
-		}*/
+		}
 		logger.info("objectName {}", objectName);
 		logger.info("commandName {}", commandName);
 		logger.info("parameters {}", parameters);
 		logger.info("context {}", context);
 		logger.info("paramsList 1 {}", paramsList);
 		
-		//Map<String, Context> c = new HashMap<>();
-		//c.put("context", context);
-		//paramsList.add(c);
+		Map<String, Context> c = new HashMap<>();
+		c.put("context", context);
+		paramsList.add(c);
 		logger.info("paramsList 2 {}", paramsList);
 
 		return objectClient.execute("execute_kw", paramsList);
@@ -468,20 +481,20 @@ public class Session {
 		Object[] connectionParams = new Object[] { databaseName, userID, password, objectName, commandName };
 
 		if (this.getServerVersion().getMajor() < 13) {
-		//if (this.getServerVersion().getMajor() < 12) {			
 			// Combine the parameters with the context
 			Object[] params = new Object[1 + (parameters == null ? 0 : parameters.length)];
 			if (parameters != null && parameters.length > 0) {
 				System.arraycopy(parameters, 0, params, 0, parameters.length);
 			}
 			System.arraycopy(new Object[] { getContext() }, 0, params, parameters.length, 1);
-			
+			logger.info("usando executeCommand");
 			logger.info("objectName {}", objectName);
 			logger.info("commandName {}", commandName);
 			logger.info("params {}", params);
 			
 			return executeCommand(objectName, commandName, params);
 		} else {
+			logger.info("usando executeCommandKw");
 			logger.info("objectName {}", objectName);
 			logger.info("commandName {}", commandName);
 			logger.info("parameters {}", parameters);

@@ -22,16 +22,22 @@ public class PartnerServiceImpl implements PartnerService {
 	private SessionOdooService sessionOdooService;
 	private static final Logger logger = LogManager.getLogger(PartnerServiceImpl.class);
 
-	
 	@Override
-	public Row obtenerPartner(String id) {
+	public Row obtenerPartner(String id) throws Exception {
+		Row row = this.obtenerPartner(id, new String[] {});
+		return row;
+	}
+
+	@Override
+	public Row obtenerPartner(String id, String[] listaCampos) throws Exception {
 		Row row = null;
 		try {
 			Session session = sessionOdooService.getSession();
-			ObjectAdapter objectAdapter = session.getObjectAdapter("res.partner");
+			session.startSession();
+			ObjectAdapter objectAdapter = session.getObjectAdapter(Constantes.MODEL_RES_PARTNER);
 			FilterCollection filter = new FilterCollection();
-			//filter.add("id", "=",id);
-			RowCollection rowCollection = objectAdapter.searchAndReadObject(filter, new String[]{"name","email"});
+			filter.add("id", "=",id);
+			RowCollection rowCollection = objectAdapter.searchAndReadObject(filter, listaCampos);
 			if(rowCollection != null && rowCollection.size() > 0) {
 				return rowCollection.get(0);
 			}
@@ -43,10 +49,13 @@ public class PartnerServiceImpl implements PartnerService {
 	}
 	
 	@Override
-	public RowCollection obtenerPartners() {
+	public RowCollection obtenerPartners() throws Exception {
 		RowCollection rowCollection = null;
 		try {
-			ObjectAdapter objectAdapter = sessionOdooService.getSession().getObjectAdapter(Constantes.MODEL_RES_PARTNER);
+			Session session = sessionOdooService.getSession();
+			session.startSession();
+			
+			ObjectAdapter objectAdapter = session.getObjectAdapter(Constantes.MODEL_RES_PARTNER);
 			FilterCollection filter = new FilterCollection();
 			rowCollection = objectAdapter.searchAndReadObject(filter, new String[]{"name","email"});
 			if(rowCollection != null && rowCollection.size() > 0) {
@@ -60,9 +69,12 @@ public class PartnerServiceImpl implements PartnerService {
 	}
 
 	@Override
-	public void registrarPartner() {
+	public void registrarPartner() throws Exception {
 		try {
-			ObjectAdapter partnerAdapter = sessionOdooService.getSession().getObjectAdapter(Constantes.MODEL_RES_PARTNER);
+			Session session = sessionOdooService.getSession();
+			session.startSession();
+			
+			ObjectAdapter partnerAdapter = session.getObjectAdapter(Constantes.MODEL_RES_PARTNER);
 			
 			Row newPartner = partnerAdapter.getNewRow(new String[]{"name", "ref", "email"});
 			newPartner.put("name", "Jhon Doe");
